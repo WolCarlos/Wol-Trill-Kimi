@@ -20,10 +20,10 @@ MAX_MINUTES=15
 # Intervallo di ripetizione (secondi) per categoria. 0 = suona una sola volta.
 interval_for() {
     case "$1" in
-        richiesta) echo 2 ;;
-        domanda)   echo 3 ;;
-        fatto)     echo 5 ;;
-        *)         echo 0 ;;  # errore, agente
+        request)  echo 2 ;;
+        question) echo 3 ;;
+        done)     echo 5 ;;
+        *)        echo 0 ;;  # error, agent
     esac
 }
 
@@ -42,7 +42,7 @@ json_field() {  # estrae un campo stringa semplice dal JSON (best-effort, senza 
 }
 
 # --- Mappa evento -> categoria / testo ---
-CATEGORY="fatto"
+CATEGORY="done"
 TITLE="Kimi Code"
 MESSAGE=""
 
@@ -52,28 +52,28 @@ case "$EVENT" in
         NTITLE="$(json_field title)"
         NBODY="$(json_field body)"
         if echo "$NTYPE" | grep -qiE "question|input|ask|elicitation"; then
-            CATEGORY="domanda"; TITLE="Kimi Code - Domanda"
+            CATEGORY="question"; TITLE="Kimi Code - Domanda"
         else
-            CATEGORY="richiesta"; TITLE="Kimi Code - Permesso richiesto"
+            CATEGORY="request"; TITLE="Kimi Code - Permesso richiesto"
         fi
         MESSAGE="$(echo "$NTITLE $NBODY" | xargs)"
         [ -z "$MESSAGE" ] && MESSAGE="Kimi richiede la tua attenzione."
         ;;
     Question)
-        CATEGORY="domanda"; TITLE="Kimi Code - Domanda"
+        CATEGORY="question"; TITLE="Kimi Code - Domanda"
         MESSAGE="Kimi ti sta facendo una domanda e attende risposta."
         ;;
     Stop)
-        CATEGORY="fatto"; TITLE="Kimi Code - Completato"
+        CATEGORY="done"; TITLE="Kimi Code - Completato"
         MESSAGE="Kimi ha finito il turno e attende il tuo input."
         ;;
     StopFailure)
-        CATEGORY="errore"; TITLE="Kimi Code - Errore"
+        CATEGORY="error"; TITLE="Kimi Code - Errore"
         MESSAGE="$(json_field error_message)"
         [ -z "$MESSAGE" ] && MESSAGE="Il turno e' terminato con un errore."
         ;;
     SubagentStop)
-        CATEGORY="agente"; TITLE="Kimi Code - Agente completato"
+        CATEGORY="agent"; TITLE="Kimi Code - Agente completato"
         AGENT="$(json_field agent_name)"
         if [ -n "$AGENT" ]; then MESSAGE="Il subagente '$AGENT' ha terminato."; else MESSAGE="Un subagente ha terminato."; fi
         ;;
@@ -84,9 +84,9 @@ STAMP_FILE="$TMP/kimi-notify-last-$CATEGORY.txt"
 NOW=$(date +%s)
 if [ -f "$STAMP_FILE" ]; then
     LAST=$(cat "$STAMP_FILE" 2>/dev/null || echo 0)
-    if [ "$CATEGORY" = "fatto" ]; then
+    if [ "$CATEGORY" = "done" ]; then
         # Stop puo' scattare a meta' lavoro: notifica solo se >=60s dall'ultimo
-        # 'fatto' OPPURE se l'utente ha scritto dopo quell'ultimo 'fatto'.
+        # 'done' OPPURE se l'utente ha scritto dopo quell'ultimo 'done'.
         if [ $((NOW - LAST)) -lt 60 ]; then
             PROMPT_TIME=0
             [ -f "$TMP/kimi-notify-prompt.txt" ] && PROMPT_TIME=$(cat "$TMP/kimi-notify-prompt.txt" 2>/dev/null || echo 0)

@@ -27,11 +27,11 @@ $MaxMinutes = 15
 
 # Intervallo di ripetizione (secondi) per categoria. 0 = suona una sola volta.
 $Intervals = @{
-    richiesta = 2    # permesso richiesto
-    domanda   = 3    # domanda all'utente
-    fatto     = 5    # fine lavoro
-    errore    = 0    # errore (singolo)
-    agente    = 0    # subagent completato (singolo)
+    request  = 2    # permission requested
+    question = 3    # question for the user
+    done     = 5    # work finished
+    error    = 0    # error (single shot)
+    agent    = 0    # subagent completed (single shot)
 }
 
 # --- Evento Answered: l'utente ha risposto -> ferma il loop + marca il prompt ---
@@ -49,7 +49,7 @@ try {
 } catch {}
 
 # --- Mappa evento -> categoria / testo ---
-$category = "fatto"
+$category = "done"
 $title    = "Kimi Code"
 $message  = ""
 
@@ -62,31 +62,31 @@ switch ($Event) {
             $nbody  = "$($json.body)"
         }
         if ($ntype -match "question|input|ask|elicitation") {
-            $category = "domanda";  $title = "Kimi Code - Domanda"
+            $category = "question"; $title = "Kimi Code - Domanda"
         } else {
-            $category = "richiesta"; $title = "Kimi Code - Permesso richiesto"
+            $category = "request"; $title = "Kimi Code - Permesso richiesto"
         }
         $message = ($ntitle + " " + $nbody).Trim()
         if (-not $message) { $message = "Kimi richiede la tua attenzione." }
     }
     "Question" {
-        $category = "domanda"
+        $category = "question"
         $title    = "Kimi Code - Domanda"
         $message  = "Kimi ti sta facendo una domanda e attende risposta."
     }
     "Stop" {
-        $category = "fatto"
+        $category = "done"
         $title    = "Kimi Code - Completato"
         $message  = "Kimi ha finito il turno e attende il tuo input."
     }
     "StopFailure" {
-        $category = "errore"
+        $category = "error"
         $title    = "Kimi Code - Errore"
         if ($json -and $json.error_message) { $message = "$($json.error_message)" }
         if (-not $message) { $message = "Il turno e' terminato con un errore." }
     }
     "SubagentStop" {
-        $category = "agente"
+        $category = "agent"
         $title    = "Kimi Code - Agente completato"
         $agent = ""
         if ($json -and $json.agent_name) { $agent = "$($json.agent_name)" }
@@ -100,9 +100,9 @@ $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds()
 try {
     if (Test-Path $stampFile) {
         $last = [int64](Get-Content $stampFile -Raw).Trim()
-        if ($category -eq "fatto") {
+        if ($category -eq "done") {
             # Stop puo' scattare a meta' lavoro: notifica solo se sono passati >=60s
-            # dall'ultimo 'fatto' OPPURE se l'utente ha scritto dopo quell'ultimo 'fatto'.
+            # dall'ultimo 'done' OPPURE se l'utente ha scritto dopo quell'ultimo 'done'.
             if (($now - $last) -lt 60) {
                 $promptStamp = Join-Path $env:TEMP "kimi-notify-prompt.txt"
                 $promptTime = 0

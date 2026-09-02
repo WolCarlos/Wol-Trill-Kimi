@@ -1,4 +1,4 @@
-# Genera i WAV delle notifiche di Kimi Code (acuti, volume alto, 44.1kHz mono 16-bit)
+# Generates the notification WAVs for Wol-Trill-Kimi (high-pitched, loud, 44.1kHz mono 16-bit)
 import math, wave, struct, os
 
 SR = 44100
@@ -33,19 +33,19 @@ def save(name, samples):
         w.setsampwidth(2)
         w.setframerate(SR)
         w.writeframes(b"".join(struct.pack("<h", int(max(-1, min(1, s)) * 32767)) for s in samples))
-    print("creato:", path)
+    print("created:", path)
 
-# RICHIESTA (permesso): allarme urgente — 4 bip rapidi altissimi (G6=1568Hz)
-save("richiesta.wav", sum([[ *tone(1568, 110), *silence(70)] for _ in range(4)], []))
+# REQUEST (permission): urgent alarm — 4 rapid high-pitched beeps (G6=1568Hz)
+save("request.wav", sum([[ *tone(1568, 110), *silence(70)] for _ in range(4)], []))
 
-# DOMANDA: due toni ascendenti ripetuti (E6->A6), interpellativo
-save("domanda.wav", (tone(1319, 140) + tone(1760, 200) + silence(150)) * 2)
+# QUESTION: rising two-tone repeated (E6->A6), inquisitive
+save("question.wav", (tone(1319, 140) + tone(1760, 200) + silence(150)) * 2)
 
-# FATTO (fine task): arpeggio ascendente brillante C6-E6-G6-C7
-save("fatto.wav", tone(1047, 120) + tone(1319, 120) + tone(1568, 120) + tone(2093, 350))
+# DONE (work finished): bright rising arpeggio C6-E6-G6-C7
+save("done.wav", tone(1047, 120) + tone(1319, 120) + tone(1568, 120) + tone(2093, 350))
 
-# ERRORE: sweep discendente
-save("errore.wav", sweep(900, 300, 450))
+# ERROR: descending sweep
+save("error.wav", sweep(900, 300, 450))
 
-# AGENTE (subagent completato): doppio blip acuto breve (C7=2093Hz)
-save("agente.wav", (tone(2093, 80) + silence(60)) * 2)
+# AGENT (subagent completed): short double high blip (C7=2093Hz)
+save("agent.wav", (tone(2093, 80) + silence(60)) * 2)

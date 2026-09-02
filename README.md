@@ -20,13 +20,13 @@ Wol-Trill-Kimi uses Kimi Code's [native hooks](https://moonshotai.github.io/kimi
 
 | Category | Event | Sound | Loop |
 |---|---|---|---|
-| 🔴 `richiesta` | Permission requested | 4 rapid high-pitched beeps | every 2s |
-| 🟡 `domanda` | Kimi asks you a question | rising two-tone | every 3s |
-| 🟢 `fatto` | Turn completed | rising arpeggio | every 5s |
-| ⛔ `errore` | Turn failed | descending sweep | single |
-| 🤖 `agente` | Subagent completed | short double blip | single |
+| 🔴 `request` | Permission requested | 4 rapid high-pitched beeps | every 2s |
+| 🟡 `question` | Kimi asks you a question | rising two-tone | every 3s |
+| 🟢 `done` | Turn completed | rising arpeggio | every 5s |
+| ⛔ `error` | Turn failed | descending sweep | single |
+| 🤖 `agent` | Subagent completed | short double blip | single |
 
-Anti-spam: Kimi's `Stop` event can fire mid-work → the "fatto" notification is suppressed if another one fired less than 60s ago without a prompt from you in between.
+Anti-spam: Kimi's `Stop` event can fire mid-work → the "done" notification is suppressed if another one fired less than 60s ago without a prompt from you in between.
 
 ## Installation
 
@@ -55,7 +55,7 @@ The installer:
 
 ## Preview the sounds
 
-- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (all) or `prova-notifiche.cmd domanda` (single category)
+- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (all) or `prova-notifiche.cmd question` (single category)
 - Regenerate/customize the WAVs with `python tools/generate-sounds.py`
 
 ## Uninstall

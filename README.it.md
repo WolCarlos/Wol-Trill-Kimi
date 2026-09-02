@@ -20,13 +20,13 @@ Wol-Trill-Kimi usa gli [hook nativi di Kimi Code](https://moonshotai.github.io/k
 
 | Categoria | Evento | Suono | Loop |
 |---|---|---|---|
-| 🔴 `richiesta` | Permesso richiesto | 4 bip rapidi altissimi | ogni 2s |
-| 🟡 `domanda` | Kimi ti fa una domanda | due toni ascendenti | ogni 3s |
-| 🟢 `fatto` | Turno completato | arpeggio ascendente | ogni 5s |
-| ⛔ `errore` | Turno fallito | sweep discendente | singolo |
-| 🤖 `agente` | Subagent completato | doppio blip acuto | singolo |
+| 🔴 `request` | Permesso richiesto | 4 bip rapidi altissimi | ogni 2s |
+| 🟡 `question` | Kimi ti fa una domanda | due toni ascendenti | ogni 3s |
+| 🟢 `done` | Turno completato | arpeggio ascendente | ogni 5s |
+| ⛔ `error` | Turno fallito | sweep discendente | singolo |
+| 🤖 `agent` | Subagent completato | doppio blip acuto | singolo |
 
-Anti-spam: il `Stop` di Kimi può scattare a metà lavoro → la notifica "fatto" viene soppressa se ne è partita un'altra da meno di 60s senza un tuo prompt in mezzo.
+Anti-spam: il `Stop` di Kimi può scattare a metà lavoro → la notifica "done" viene soppressa se ne è partita un'altra da meno di 60s senza un tuo prompt in mezzo.
 
 ## Installazione
 
@@ -55,7 +55,7 @@ L'installer:
 
 ## Provare i suoni
 
-- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd domanda` (singolo)
+- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd question` (singolo)
 - I WAV si rigenerano/modificano con `python tools/generate-sounds.py`
 
 ## Disinstallazione

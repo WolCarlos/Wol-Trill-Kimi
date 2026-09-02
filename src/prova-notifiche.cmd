@@ -3,9 +3,9 @@ rem ============================================================================
 rem Wol-Trill-Kimi — prova-notifiche.cmd (Windows)
 rem Riproduci i suoni delle notifiche per provarli.
 rem Uso:
-rem   prova-notifiche.cmd           -> suona tutte le categorie in sequenza
-rem   prova-notifiche.cmd richiesta -> suona solo quella categoria
-rem Categorie: richiesta, domanda, fatto, errore, agente
+rem   prova-notifiche.cmd          -> suona tutte le categorie in sequenza
+rem   prova-notifiche.cmd request  -> suona solo quella categoria
+rem Categorie: request, question, done, error, agent
 rem ============================================================================
 
 setlocal
@@ -18,11 +18,11 @@ if not "%~1"=="" (
 
 echo Prova suoni Wol-Trill-Kimi (5 suoni in sequenza)...
 echo.
-call :play richiesta
-call :play domanda
-call :play fatto
-call :play errore
-call :play agente
+call :play request
+call :play question
+call :play done
+call :play error
+call :play agent
 echo.
 echo Fatto.
 goto :eof
@@ -31,7 +31,7 @@ goto :eof
 set "name=%~1"
 if not exist "%DIR%\%name%.wav" (
     echo [ERRORE] Categoria sconosciuta o WAV mancante: %name%
-    echo Categorie valide: richiesta, domanda, fatto, errore, agente
+    echo Categorie valide: request, question, done, error, agent
     exit /b 1
 )
 echo  -^> %name%
