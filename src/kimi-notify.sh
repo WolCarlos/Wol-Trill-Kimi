@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Wol-NoticheKimi — kimi-notify.sh (macOS)
+# Wol-Trill-Kimi — kimi-notify.sh (macOS)
 # Notifiche sonore + notifiche di sistema per gli hook di Kimi Code.
 # Stessa logica della versione Windows: un solo loop alla volta, il nuovo
 # alert sopprime il precedente, stop su risposta utente / stop-notifica.sh /

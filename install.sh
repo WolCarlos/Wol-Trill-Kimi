@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================================
-# Wol-NoticheKimi — install.sh (macOS)
+# Wol-Trill-Kimi — install.sh (macOS)
 # Installa le notifiche per Kimi Code:
 #   1. copia script + suoni in ~/.kimi/notify/
 #   2. aggiunge gli hook a ~/.kimi/config.toml (blocco marcato, idempotente)
@@ -12,7 +12,7 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEST="$HOME/.kimi/notify"
 CONFIG="$HOME/.kimi/config.toml"
 
-echo "== Wol-NoticheKimi: installazione (macOS) =="
+echo "== Wol-Trill-Kimi: installazione (macOS) =="
 
 # --- 1. Copia file ---
 mkdir -p "$DEST/sounds"
@@ -22,8 +22,8 @@ chmod +x "$DEST/kimi-notify.sh" "$DEST/stop-notifica.sh"
 echo "[OK] File copiati in $DEST"
 
 # --- 2. Hook in config.toml (blocco marcato, idempotente) ---
-BEGIN="# >>> WOL-NOTICHEKIMI >>>"
-END="# <<< WOL-NOTICHEKIMI <<<"
+BEGIN="# >>> WOL-TRILL-KIMI >>>"
+END="# <<< WOL-TRILL-KIMI <<<"
 
 if [ -f "$CONFIG" ]; then
     BACKUP="$CONFIG.bak-$(date +%Y%m%d-%H%M%S)"

@@ -1,5 +1,5 @@
 # ============================================================================
-# Wol-NoticheKimi — kimi-notify.ps1 (Windows)
+# Wol-Trill-Kimi — kimi-notify.ps1 (Windows)
 # Notifiche sonore + toast per gli hook di Kimi Code.
 #
 # Modello: OGNI alert avvia UN loop sonoro che si ripete finche' non viene

@@ -1,13 +1,13 @@
 # ============================================================================
-# Wol-NoticheKimi — uninstall.ps1 (Windows)
+# Wol-Trill-Kimi — uninstall.ps1 (Windows)
 # Rimuove hook e file installati. Uso:
 #   powershell.exe -NoProfile -ExecutionPolicy Bypass -File uninstall.ps1
 # ============================================================================
 $ErrorActionPreference = "Continue"
 $dest    = Join-Path $HOME ".kimi\notify"
 $config  = Join-Path $HOME ".kimi\config.toml"
-$begin   = "# >>> WOL-NOTICHEKIMI >>>"
-$end     = "# <<< WOL-NOTICHEKIMI <<<"
+$begin   = "# >>> WOL-TRILL-KIMI >>>"
+$end     = "# <<< WOL-TRILL-KIMI <<<"
 
 # Ferma eventuali loop
 Remove-Item (Join-Path $env:TEMP "kimi-notify-pending.flag") -Force -ErrorAction SilentlyContinue

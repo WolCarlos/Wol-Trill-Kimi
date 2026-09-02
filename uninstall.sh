@@ -1,11 +1,11 @@
 #!/bin/bash
 # ============================================================================
-# Wol-NoticheKimi — uninstall.sh (macOS). Uso: bash uninstall.sh
+# Wol-Trill-Kimi — uninstall.sh (macOS). Uso: bash uninstall.sh
 # ============================================================================
 DEST="$HOME/.kimi/notify"
 CONFIG="$HOME/.kimi/config.toml"
-BEGIN="# >>> WOL-NOTICHEKIMI >>>"
-END="# <<< WOL-NOTICHEKIMI <<<"
+BEGIN="# >>> WOL-TRILL-KIMI >>>"
+END="# <<< WOL-TRILL-KIMI <<<"
 
 rm -f "${TMPDIR:-/tmp}/kimi-notify-pending.flag"
 

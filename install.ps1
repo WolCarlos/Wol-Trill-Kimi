@@ -1,5 +1,5 @@
 # ============================================================================
-# Wol-NoticheKimi — install.ps1 (Windows)
+# Wol-Trill-Kimi — install.ps1 (Windows)
 # Installa le notifiche per Kimi Code:
 #   1. copia script + suoni in ~\.kimi\notify\
 #   2. aggiunge gli hook a ~\.kimi\config.toml (blocco marcato, idempotente)
@@ -12,7 +12,7 @@ $src     = Split-Path -Parent $MyInvocation.MyCommand.Path
 $dest    = Join-Path $HOME ".kimi\notify"
 $config  = Join-Path $HOME ".kimi\config.toml"
 
-Write-Host "== Wol-NoticheKimi: installazione =="
+Write-Host "== Wol-Trill-Kimi: installazione =="
 
 # --- 1. Copia file ---
 New-Item -ItemType Directory -Force -Path $dest | Out-Null
@@ -23,8 +23,8 @@ Copy-Item (Join-Path $src "sounds\*.wav") (Join-Path $dest "sounds") -Force
 Write-Host "[OK] File copiati in $dest"
 
 # --- 2. Hook in config.toml (blocco marcato, idempotente) ---
-$begin = "# >>> WOL-NOTICHEKIMI >>>"
-$end   = "# <<< WOL-NOTICHEKIMI <<<"
+$begin = "# >>> WOL-TRILL-KIMI >>>"
+$end   = "# <<< WOL-TRILL-KIMI <<<"
 
 $notify = Join-Path $dest "kimi-notify.ps1"
 $block = @"
@@ -95,7 +95,7 @@ try {
     $lnk = $wsh.CreateShortcut((Join-Path $desktop "STOP Kimi Notifiche.lnk"))
     $lnk.TargetPath = Join-Path $dest "stop-notifica.cmd"
     $lnk.WindowStyle = 7  # minimizzata
-    $lnk.Description = "Ferma subito i suoni di Wol-NoticheKimi"
+    $lnk.Description = "Ferma subito i suoni di Wol-Trill-Kimi"
     $lnk.Save()
     Write-Host "[OK] Collegamento Desktop: STOP Kimi Notifiche.lnk"
 } catch {

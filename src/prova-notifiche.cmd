@@ -1,6 +1,6 @@
 @echo off
 rem ============================================================================
-rem Wol-NoticheKimi — prova-notifiche.cmd (Windows)
+rem Wol-Trill-Kimi — prova-notifiche.cmd (Windows)
 rem Riproduci i suoni delle notifiche per provarli.
 rem Uso:
 rem   prova-notifiche.cmd           -> suona tutte le categorie in sequenza
@@ -16,7 +16,7 @@ if not "%~1"=="" (
     goto :eof
 )
 
-echo Prova suoni Wol-NoticheKimi (5 suoni in sequenza)...
+echo Prova suoni Wol-Trill-Kimi (5 suoni in sequenza)...
 echo.
 call :play richiesta
 call :play domanda

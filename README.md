@@ -1,32 +1,34 @@
-# Wol-NoticheKimi
+# Wol-Trill-Kimi
 
-Notifiche **sonore e visive** per [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (estensione VS Code e CLI), per **Windows** e **macOS**.
+[🇬🇧 **English**](README.md) | [🇮🇹 **Italiano**](README.it.md)
 
-Sai quando Kimi ti chiede un permesso, ti fa una domanda o finisce il lavoro — anche se sei su un'altra finestra.
+**Sound and visual notifications** for [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (VS Code extension and CLI), on **Windows** and **macOS**.
 
-## Come funziona
+Know when Kimi asks for a permission, asks you a question, or finishes its work — even when you're on another window.
 
-Wol-NoticheKimi usa gli [hook nativi di Kimi Code](https://moonshotai.github.io/kimi-cli/en/customization/hooks.html) (`~/.kimi/config.toml`). A ogni evento parte un **suono in loop** che si ripete finché:
+## How it works
 
-- **rispondi a Kimi** (scrivi un prompt, approvi/neghi un tool), oppure
-- **lo fermi manualmente** con lo script di stop, oppure
-- scade il timeout di sicurezza (15 minuti).
+Wol-Trill-Kimi uses Kimi Code's [native hooks](https://moonshotai.github.io/kimi-cli/en/customization/hooks.html) (`~/.kimi/config.toml`). Each event starts a **looping sound** that repeats until:
 
-**Un solo loop alla volta**: ogni nuova notifica sopprime quella precedente.
+- **you answer Kimi** (submit a prompt, approve/deny a tool), or
+- **you stop it manually** with the stop script, or
+- the safety timeout expires (15 minutes).
 
-## Suoni
+**Only one loop at a time**: every new notification suppresses the previous one.
 
-| Categoria | Evento | Suono | Loop |
+## Sounds
+
+| Category | Event | Sound | Loop |
 |---|---|---|---|
-| 🔴 `richiesta` | Permesso richiesto | 4 bip rapidi altissimi | ogni 2s |
-| 🟡 `domanda` | Kimi ti fa una domanda | due toni ascendenti | ogni 3s |
-| 🟢 `fatto` | Turno completato | arpeggio ascendente | ogni 5s |
-| ⛔ `errore` | Turno fallito | sweep discendente | singolo |
-| 🤖 `agente` | Subagent completato | doppio blip acuto | singolo |
+| 🔴 `richiesta` | Permission requested | 4 rapid high-pitched beeps | every 2s |
+| 🟡 `domanda` | Kimi asks you a question | rising two-tone | every 3s |
+| 🟢 `fatto` | Turn completed | rising arpeggio | every 5s |
+| ⛔ `errore` | Turn failed | descending sweep | single |
+| 🤖 `agente` | Subagent completed | short double blip | single |
 
-Anti-spam: il `Stop` di Kimi può scattare a metà lavoro → la notifica "fatto" viene soppressa se ne è partita un'altra da meno di 60s senza un tuo prompt in mezzo.
+Anti-spam: Kimi's `Stop` event can fire mid-work → the "fatto" notification is suppressed if another one fired less than 60s ago without a prompt from you in between.
 
-## Installazione
+## Installation
 
 ### Windows
 ```powershell
@@ -38,50 +40,50 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File install.ps1
 bash install.sh
 ```
 
-L'installer:
-1. copia script e suoni in `~/.kimi/notify/`
-2. aggiunge gli hook a `~/.kimi/config.toml` (backup automatico, blocco marcato idempotente `# >>> WOL-NOTICHEKIMI >>>`)
-3. *(solo Windows)* crea sul Desktop il collegamento **STOP Kimi Notifiche**
+The installer:
+1. copies scripts and sounds to `~/.kimi/notify/`
+2. adds the hooks to `~/.kimi/config.toml` (automatic backup, idempotent marked block `# >>> WOL-TRILL-KIMI >>>`)
+3. *(Windows only)* creates a **STOP Kimi Notifiche** shortcut on your Desktop
 
-**Riavvia Kimi Code** dopo l'installazione per caricare gli hook.
+**Restart Kimi Code** after installation to load the hooks.
 
-## Fermare un suono in loop
+## Stop a looping sound
 
-- **Rispondi a Kimi** (prompt o click su approva/nega) → si ferma da solo
-- **Windows**: doppio click su `STOP Kimi Notifiche` sul Desktop (o esegui `~/.kimi/notify/stop-notifica.cmd`)
-- **macOS**: esegui `~/.kimi/notify/stop-notifica.sh`
+- **Answer Kimi** (prompt or approve/deny click) → it stops by itself
+- **Windows**: double-click `STOP Kimi Notifiche` on the Desktop (or run `~/.kimi/notify/stop-notifica.cmd`)
+- **macOS**: run `~/.kimi/notify/stop-notifica.sh`
 
-## Provare i suoni
+## Preview the sounds
 
-- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd domanda` (singolo)
-- I WAV si rigenerano/modificano con `python tools/generate-sounds.py`
+- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (all) or `prova-notifiche.cmd domanda` (single category)
+- Regenerate/customize the WAVs with `python tools/generate-sounds.py`
 
-## Disinstallazione
+## Uninstall
 
 - **Windows**: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File uninstall.ps1`
 - **macOS**: `bash uninstall.sh`
 
-## Struttura
+## Project structure
 
 ```
 src/
-  kimi-notify.ps1       # motore notifiche (Windows)
-  kimi-notify-loop.ps1  # loop sonoro in background (Windows)
-  kimi-notify.sh        # motore + loop (macOS)
-  stop-notifica.cmd     # stop manuale (Windows)
-  stop-notifica.sh      # stop manuale (macOS)
-  prova-notifiche.cmd   # prova i suoni (Windows)
-sounds/                 # WAV delle 5 categorie
+  kimi-notify.ps1       # notification engine (Windows)
+  kimi-notify-loop.ps1  # background sound loop (Windows)
+  kimi-notify.sh        # engine + loop (macOS)
+  stop-notifica.cmd     # manual stop (Windows)
+  stop-notifica.sh      # manual stop (macOS)
+  prova-notifiche.cmd   # sound preview (Windows)
+sounds/                 # WAVs for the 5 categories
 tools/generate-sounds.py
 install.* / uninstall.*
 ```
 
-## Note
+## Notes
 
-- Richiede Kimi Code con supporto hooks (Beta). Gli hook girano nello stesso shell di Kimi (Git Bash su Windows, bash su macOS).
-- Su Windows i suoni vengono riprodotti direttamente (`System.Media.SoundPlayer`): non dipendono da Focus Assist né dalle impostazioni delle notifiche.
-- Su macOS i suoni usano `afplay` e le notifiche visive `osascript`.
+- Requires Kimi Code with hooks support (Beta). Hooks run in the same shell as Kimi (Git Bash on Windows, bash on macOS).
+- On Windows sounds are played directly (`System.Media.SoundPlayer`): they don't depend on Focus Assist or notification settings.
+- On macOS sounds use `afplay` and visual notifications use `osascript`.
 
-## Licenza
+## License
 
 MIT

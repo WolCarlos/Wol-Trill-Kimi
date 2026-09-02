@@ -1,5 +1,5 @@
 # ============================================================================
-# Wol-NoticheKimi — kimi-notify-loop.ps1 (Windows)
+# Wol-Trill-Kimi — kimi-notify-loop.ps1 (Windows)
 # Ripete un WAV finche' il flag file contiene il proprio LoopId (o timeout).
 # Lanciato in background da kimi-notify.ps1. Un nuovo alert sovrascrive il
 # flag con un nuovo LoopId -> questo loop esce da solo.
