@@ -1,0 +1,87 @@
+# Wol-NoticheKimi
+
+Notifiche **sonore e visive** per [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (estensione VS Code e CLI), per **Windows** e **macOS**.
+
+Sai quando Kimi ti chiede un permesso, ti fa una domanda o finisce il lavoro — anche se sei su un'altra finestra.
+
+## Come funziona
+
+Wol-NoticheKimi usa gli [hook nativi di Kimi Code](https://moonshotai.github.io/kimi-cli/en/customization/hooks.html) (`~/.kimi/config.toml`). A ogni evento parte un **suono in loop** che si ripete finché:
+
+- **rispondi a Kimi** (scrivi un prompt, approvi/neghi un tool), oppure
+- **lo fermi manualmente** con lo script di stop, oppure
+- scade il timeout di sicurezza (15 minuti).
+
+**Un solo loop alla volta**: ogni nuova notifica sopprime quella precedente.
+
+## Suoni
+
+| Categoria | Evento | Suono | Loop |
+|---|---|---|---|
+| 🔴 `richiesta` | Permesso richiesto | 4 bip rapidi altissimi | ogni 2s |
+| 🟡 `domanda` | Kimi ti fa una domanda | due toni ascendenti | ogni 3s |
+| 🟢 `fatto` | Turno completato | arpeggio ascendente | ogni 5s |
+| ⛔ `errore` | Turno fallito | sweep discendente | singolo |
+| 🤖 `agente` | Subagent completato | doppio blip acuto | singolo |
+
+Anti-spam: il `Stop` di Kimi può scattare a metà lavoro → la notifica "fatto" viene soppressa se ne è partita un'altra da meno di 60s senza un tuo prompt in mezzo.
+
+## Installazione
+
+### Windows
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File install.ps1
+```
+
+### macOS
+```bash
+bash install.sh
+```
+
+L'installer:
+1. copia script e suoni in `~/.kimi/notify/`
+2. aggiunge gli hook a `~/.kimi/config.toml` (backup automatico, blocco marcato idempotente `# >>> WOL-NOTICHEKIMI >>>`)
+3. *(solo Windows)* crea sul Desktop il collegamento **STOP Kimi Notifiche**
+
+**Riavvia Kimi Code** dopo l'installazione per caricare gli hook.
+
+## Fermare un suono in loop
+
+- **Rispondi a Kimi** (prompt o click su approva/nega) → si ferma da solo
+- **Windows**: doppio click su `STOP Kimi Notifiche` sul Desktop (o esegui `~/.kimi/notify/stop-notifica.cmd`)
+- **macOS**: esegui `~/.kimi/notify/stop-notifica.sh`
+
+## Provare i suoni
+
+- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd domanda` (singolo)
+- I WAV si rigenerano/modificano con `python tools/generate-sounds.py`
+
+## Disinstallazione
+
+- **Windows**: `powershell.exe -NoProfile -ExecutionPolicy Bypass -File uninstall.ps1`
+- **macOS**: `bash uninstall.sh`
+
+## Struttura
+
+```
+src/
+  kimi-notify.ps1       # motore notifiche (Windows)
+  kimi-notify-loop.ps1  # loop sonoro in background (Windows)
+  kimi-notify.sh        # motore + loop (macOS)
+  stop-notifica.cmd     # stop manuale (Windows)
+  stop-notifica.sh      # stop manuale (macOS)
+  prova-notifiche.cmd   # prova i suoni (Windows)
+sounds/                 # WAV delle 5 categorie
+tools/generate-sounds.py
+install.* / uninstall.*
+```
+
+## Note
+
+- Richiede Kimi Code con supporto hooks (Beta). Gli hook girano nello stesso shell di Kimi (Git Bash su Windows, bash su macOS).
+- Su Windows i suoni vengono riprodotti direttamente (`System.Media.SoundPlayer`): non dipendono da Focus Assist né dalle impostazioni delle notifiche.
+- Su macOS i suoni usano `afplay` e le notifiche visive `osascript`.
+
+## Licenza
+
+MIT
