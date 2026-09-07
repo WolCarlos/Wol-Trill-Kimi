@@ -49,9 +49,12 @@ L'installer:
 
 ## Fermare un suono in loop
 
+- **Clicca il tasto "Ferma suono" dentro la notifica toast** (Windows, registrato tramite il protocollo `woltrillkimi://stop`)
 - **Rispondi a Kimi** (prompt o click su approva/nega) → si ferma da solo
 - **Windows**: doppio click su `STOP Kimi Notifiche` sul Desktop (o esegui `~/.kimi/notify/stop-notifica.cmd`)
 - **macOS**: esegui `~/.kimi/notify/stop-notifica.sh`
+
+Nota: chiudere la toast (o cliccare sul suo corpo) NON ferma il suono — usa il tasto o uno dei metodi sopra.
 
 ## Provare i suoni
 

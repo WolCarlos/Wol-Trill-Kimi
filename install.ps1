@@ -19,6 +19,7 @@ New-Item -ItemType Directory -Force -Path $dest | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $dest "sounds") | Out-Null
 Copy-Item (Join-Path $src "src\*.ps1")  $dest -Force
 Copy-Item (Join-Path $src "src\*.cmd")  $dest -Force
+Copy-Item (Join-Path $src "src\*.vbs")  $dest -Force
 Copy-Item (Join-Path $src "sounds\*.wav") (Join-Path $dest "sounds") -Force
 Write-Host "[OK] File copiati in $dest"
 
@@ -102,8 +103,20 @@ try {
     Write-Host "[WARN] Collegamento Desktop non creato: $_"
 }
 
+# --- 4. Protocollo woltrillkimi://stop (tasto "Ferma suono" dentro le toast) ---
+try {
+    $proto = "HKCU:\Software\Classes\woltrillkimi"
+    New-Item -Path "$proto\shell\open\command" -Force | Out-Null
+    Set-Item -Path $proto -Value "URL:Wol-Trill-Kimi Protocol"
+    New-ItemProperty -Path $proto -Name "URL Protocol" -Value "" -PropertyType String -Force | Out-Null
+    Set-Item -Path "$proto\shell\open\command" -Value "wscript.exe `"$(Join-Path $dest 'stop-notifica.vbs')`""
+    Write-Host "[OK] Protocollo woltrillkimi://stop registrato (tasto nelle toast)"
+} catch {
+    Write-Host "[WARN] Protocollo non registrato: $_"
+}
+
 Write-Host ""
 Write-Host "== Installazione completata =="
 Write-Host "Riavvia la sessione Kimi Code per attivare gli hook."
 Write-Host "Per provare i suoni: $dest\prova-notifiche.cmd"
-Write-Host "Per fermare un suono in loop: doppio click su 'STOP Kimi Notifiche' sul Desktop."
+Write-Host "Per fermare un suono in loop: tasto 'Ferma suono' nella notifica, doppio click su 'STOP Kimi Notifiche' sul Desktop, o rispondi a Kimi."

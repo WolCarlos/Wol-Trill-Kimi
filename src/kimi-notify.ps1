@@ -161,6 +161,9 @@ try {
     </binding>
   </visual>
   <audio silent="true"/>
+  <actions>
+    <action content="Ferma suono" activationType="protocol" arguments="woltrillkimi://stop"/>
+  </actions>
 </toast>
 "@
     [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] | Out-Null

@@ -49,9 +49,12 @@ The installer:
 
 ## Stop a looping sound
 
+- **Click the "Ferma suono" button inside the toast notification** (Windows, registered via the `woltrillkimi://stop` protocol)
 - **Answer Kimi** (prompt or approve/deny click) → it stops by itself
 - **Windows**: double-click `STOP Kimi Notifiche` on the Desktop (or run `~/.kimi/notify/stop-notifica.cmd`)
 - **macOS**: run `~/.kimi/notify/stop-notifica.sh`
+
+Note: closing the toast (or clicking its body) does NOT stop the sound — use the button or one of the methods above.
 
 ## Preview the sounds
 
