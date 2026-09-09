@@ -17,6 +17,8 @@ $customDir  = Join-Path $soundDir "custom"
 $flagFile   = Join-Path $env:TEMP "kimi-notify-pending.flag"
 $AudioExts  = @(".wav", ".mp3", ".m4a", ".aac", ".ogg")
 
+. (Join-Path $base "kimi-notify-player.ps1")
+
 $Categories = @(
     @{ Key="request";  Emoji=[System.Char]::ConvertFromUtf32(0x1F534); Nome="Permesso richiesto";  Desc="Kimi chiede un'approvazione" }
     @{ Key="question"; Emoji=[System.Char]::ConvertFromUtf32(0x1F7E1); Nome="Domanda";             Desc="Kimi ti fa una domanda" }

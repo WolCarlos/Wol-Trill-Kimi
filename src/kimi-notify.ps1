@@ -30,6 +30,8 @@ $configFile = Join-Path $base "config.json"
 $flagFile   = Join-Path $env:TEMP "kimi-notify-pending.flag"
 $MaxMinutes = 15
 
+. (Join-Path $base "kimi-notify-player.ps1")
+
 # --- Configurazione (volumi 0-100, intervalli secondi; 0 = colpo singolo) ---
 $Volumes   = @{ request=25; question=25; done=30; error=30; agent=25; info=25 }
 $Intervals = @{ request=2;   question=3;  done=5;  error=0;   agent=0;  info=0  }
@@ -163,21 +165,8 @@ if ($interval -gt 0) {
         try { (New-Object System.Media.SoundPlayer $wav).PlaySync() } catch {}
     }
 } else {
-    # --- Suono singolo (volume da config, via WMP COM; fallback SoundPlayer) ---
-    try {
-        $wmp = New-Object -ComObject WMPlayer.OCX
-        $wmp.settings.volume = $volume
-        $wmp.URL = $wav
-        Start-Sleep -Milliseconds 250  # lascia partire la riproduzione
-        $t0 = Get-Date
-        # attendi la fine: playState 1=stopped, 8=media ended
-        while (($wmp.playState -ne 1 -and $wmp.playState -ne 8) -and ((Get-Date) - $t0).TotalSeconds -lt 10) {
-            Start-Sleep -Milliseconds 100
-        }
-        $wmp.close()
-    } catch {
-        try { (New-Object System.Media.SoundPlayer $wav).PlaySync() } catch { try { [Console]::Beep(1800, 400) } catch {} }
-    }
+    # --- Suono singolo (player condiviso, volume da config) ---
+    Play-NotificationSound -Path $wav -Volume $volume
     # Alert singolo: nessun loop in attesa -> pulisci il flag
     try { Remove-Item $flagFile -Force } catch {}
 }
