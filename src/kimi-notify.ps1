@@ -31,7 +31,7 @@ $flagFile   = Join-Path $env:TEMP "kimi-notify-pending.flag"
 $MaxMinutes = 15
 
 # --- Configurazione (volumi 0-100, intervalli secondi; 0 = colpo singolo) ---
-$Volumes   = @{ request=100; question=90; done=70; error=100; agent=60; info=50 }
+$Volumes   = @{ request=25; question=25; done=30; error=30; agent=25; info=25 }
 $Intervals = @{ request=2;   question=3;  done=5;  error=0;   agent=0;  info=0  }
 $Files     = @{}
 try {

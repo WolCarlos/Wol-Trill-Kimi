@@ -35,7 +35,7 @@ interval_for() {
     conf_val interval "$1" "$(case "$1" in request) echo 2;; question) echo 3;; done) echo 5;; *) echo 0;; esac)"
 }
 volume_for() {
-    conf_val volume "$1" "$(case "$1" in request) echo 100;; question) echo 90;; done) echo 70;; error) echo 100;; agent) echo 60;; info) echo 50;; esac)"
+    conf_val volume "$1" "$(case "$1" in request) echo 25;; question) echo 25;; done) echo 30;; error) echo 30;; agent) echo 25;; info) echo 25;; esac)"
 }
 file_for() {  # suono personalizzato da config (sezione files), stringa
     awk -v key="\"$1\"" '

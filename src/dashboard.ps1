@@ -26,8 +26,8 @@ $Categories = @(
     @{ Key="info";     Emoji=[System.Char]::ConvertFromUtf32(0x2139);  Nome="Info";                Desc="Notifiche informative (es. task background)" }
 )
 $Defaults = @{
-    volume   = @{ request=100; question=90; done=70; error=100; agent=60; info=50 }
-    interval = @{ request=2;   question=3;  done=5;  error=0;   agent=0;  info=0 }
+    volume   = @{ request=25; question=25; done=30; error=30; agent=25; info=25 }
+    interval = @{ request=2;  question=3;  done=5;  error=0;  agent=0;  info=0 }
 }
 
 # --- Carica config ---
@@ -69,6 +69,7 @@ function Save-Config {
     <Style TargetType="TextBlock"><Setter Property="VerticalAlignment" Value="Center"/></Style>
     <Style TargetType="Slider">
       <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="IsMoveToPointEnabled" Value="True"/>
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="Slider">
@@ -86,7 +87,10 @@ function Save-Config {
                   <Thumb>
                     <Thumb.Template>
                       <ControlTemplate TargetType="Thumb">
-                        <Ellipse Width="18" Height="18" Fill="#FFFFFFFF" Stroke="#FF3D7EEF" StrokeThickness="3"/>
+                        <Grid Width="28" Height="28" Background="Transparent">
+                          <Ellipse Width="18" Height="18" Fill="#FFFFFFFF" Stroke="#FF3D7EEF" StrokeThickness="3"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
                       </ControlTemplate>
                     </Thumb.Template>
                   </Thumb>
@@ -217,7 +221,7 @@ foreach ($c in $Categories) {
     [System.Windows.Controls.Grid]::SetColumn($head, 0)
     $grid.Children.Add($head) | Out-Null
 
-    # Colonna 1: slider volume + badge numerico
+    # Colonna 1: slider volume + numero editabile
     $volPanel = New-Object System.Windows.Controls.StackPanel
     $volPanel.Orientation = "Horizontal"; $volPanel.Margin = "14,0,0,0"
     $volLabel0 = New-Object System.Windows.Controls.TextBlock
@@ -227,19 +231,16 @@ foreach ($c in $Categories) {
     $slider.Width = 150
     $slider.Minimum = 0; $slider.Maximum = 100   # prima di Value: il default e' 0-10 e taglierebbe il valore
     $slider.Value = $cfgVolumes[$k]
-    $badge = New-Object System.Windows.Controls.Border
-    $badge.Background = [System.Windows.Media.BrushConverter]::new().ConvertFrom("#FF222634")
-    $badge.CornerRadius = "5"; $badge.Padding = "8,2"; $badge.Margin = "10,0,0,0"
-    $badge.Width = 56
-    $badge.HorizontalAlignment = "Left"
-    $volVal = New-Object System.Windows.Controls.TextBlock
-    $volVal.Text = "$([int]$slider.Value)"; $volVal.FontWeight = "Bold"
-    $volVal.TextAlignment = "Center"; $volVal.TextWrapping = "NoWrap"
+    $volVal = New-Object System.Windows.Controls.TextBox
+    $volVal.Text = "$([int]$slider.Value)"
+    $volVal.Width = 56; $volVal.Margin = "10,0,0,0"
+    $volVal.FontWeight = "Bold"; $volVal.TextAlignment = "Center"
     $volVal.Foreground = [System.Windows.Media.BrushConverter]::new().ConvertFrom("#FF7BE08B")
-    $badge.Child = $volVal
+    $volVal.ToolTip = "Scrivi un numero 0-100 e premi Invio"
+    $volVal.Tag = $k
     $volPanel.Children.Add($volLabel0) | Out-Null
     $volPanel.Children.Add($slider)   | Out-Null
-    $volPanel.Children.Add($badge)    | Out-Null
+    $volPanel.Children.Add($volVal)   | Out-Null
     [System.Windows.Controls.Grid]::SetColumn($volPanel, 1)
     $grid.Children.Add($volPanel) | Out-Null
 
@@ -284,8 +285,31 @@ foreach ($c in $Categories) {
 # --- Eventi slider / test / sfoglia / reset ---
 foreach ($k in $state.Keys) {
     $s = $state[$k]
-    $slider = $s.slider; $volVal = $s.volVal
-    $slider.Add_ValueChanged({ $volVal.Text = "$([int]$slider.Value)" }.GetNewClosure())
+    $s.sync = $false
+    $slider = $s.slider
+    $kk = $k
+
+    $slider.Add_ValueChanged({
+        if (-not $state[$kk].sync) { $state[$kk].volVal.Text = "$([int]$slider.Value)" }
+    }.GetNewClosure())
+
+    # volume scritto a mano: Invio o uscita dal campo -> applica (clamp 0-100)
+    $applyVol = {
+        param($sender, $e)
+        $n = 0
+        if ([int]::TryParse($sender.Text, [ref]$n)) {
+            if ($n -lt 0) { $n = 0 }; if ($n -gt 100) { $n = 100 }
+            $state[$sender.Tag].sync = $true
+            $state[$sender.Tag].slider.Value = $n
+            $state[$sender.Tag].sync = $false
+        }
+        $sender.Text = "$([int]$state[$sender.Tag].slider.Value)"
+    }.GetNewClosure()
+    $s.volVal.Add_LostFocus($applyVol)
+    $s.volVal.Add_KeyDown({
+        param($sender, $e)
+        if ($e.Key -eq [System.Windows.Input.Key]::Return) { $applyVol.Invoke($sender, $e) }
+    }.GetNewClosure())
 
     $s.test.Add_Click({
         param($sender, $e)
