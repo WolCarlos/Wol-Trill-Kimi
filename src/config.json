@@ -1,0 +1,19 @@
+{
+  "_commento": "Wol-Trill-Kimi — configurazione suoni. volume: 0-100 (indipendente per categoria). interval: secondi tra una ripetizione e l'altra; 0 = suona una sola volta. Dopo le modifiche non serve riavviare: vengono lette a ogni notifica.",
+  "volume": {
+    "request":  100,
+    "question": 90,
+    "done":     70,
+    "error":    100,
+    "agent":    60,
+    "info":     50
+  },
+  "interval": {
+    "request":  2,
+    "question": 3,
+    "done":     5,
+    "error":    0,
+    "agent":    0,
+    "info":     0
+  }
+}

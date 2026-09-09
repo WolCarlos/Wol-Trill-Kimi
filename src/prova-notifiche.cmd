@@ -5,7 +5,7 @@ rem Riproduci i suoni delle notifiche per provarli.
 rem Uso:
 rem   prova-notifiche.cmd          -> suona tutte le categorie in sequenza
 rem   prova-notifiche.cmd request  -> suona solo quella categoria
-rem Categorie: request, question, done, error, agent
+rem Categorie: request, question, done, error, agent, info
 rem ============================================================================
 
 setlocal
@@ -23,6 +23,7 @@ call :play question
 call :play done
 call :play error
 call :play agent
+call :play info
 echo.
 echo Fatto.
 goto :eof
@@ -31,7 +32,7 @@ goto :eof
 set "name=%~1"
 if not exist "%DIR%\%name%.wav" (
     echo [ERRORE] Categoria sconosciuta o WAV mancante: %name%
-    echo Categorie valide: request, question, done, error, agent
+    echo Categorie valide: request, question, done, error, agent, info
     exit /b 1
 )
 echo  -^> %name%

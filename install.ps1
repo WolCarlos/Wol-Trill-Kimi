@@ -21,6 +21,13 @@ Copy-Item (Join-Path $src "src\*.ps1")  $dest -Force
 Copy-Item (Join-Path $src "src\*.cmd")  $dest -Force
 Copy-Item (Join-Path $src "src\*.vbs")  $dest -Force
 Copy-Item (Join-Path $src "sounds\*.wav") (Join-Path $dest "sounds") -Force
+# config.json: non sovrascrivere le preferenze dell'utente se esiste gia'
+if (-not (Test-Path (Join-Path $dest "config.json"))) {
+    Copy-Item (Join-Path $src "src\config.json") $dest
+    Write-Host "[OK] config.json installato (default)"
+} else {
+    Write-Host "[OK] config.json esistente mantenuto"
+}
 Write-Host "[OK] File copiati in $dest"
 
 # --- 2. Hook in config.toml (blocco marcato, idempotente) ---

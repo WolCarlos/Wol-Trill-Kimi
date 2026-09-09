@@ -5,9 +5,13 @@
 # Modello: OGNI alert avvia UN loop sonoro che si ripete finche' non viene
 # fermato. Un solo loop alla volta: un nuovo alert sopprime quello precedente.
 # Il loop si ferma quando:
+#   - l'utente clicca "Ferma suono" (o il corpo) della toast / della notifica
+#     nel Centro notifiche (protocollo woltrillkimi://stop)
 #   - l'utente risponde (hook UserPromptSubmit / PostToolUse / PostToolUseFailure)
 #   - l'utente lancia stop-notifica.cmd
 #   - scade il timeout di sicurezza (MaxMinutes)
+#
+# Volumi e intervalli: config.json nella stessa cartella (letto a ogni evento).
 #
 # Uso (hook Kimi): riceve il JSON dell'evento via stdin.
 #   powershell.exe -NoProfile -ExecutionPolicy Bypass -File kimi-notify.ps1 -Event <Evento>
@@ -22,17 +26,22 @@ $ErrorActionPreference = "SilentlyContinue"
 $base       = Split-Path -Parent $MyInvocation.MyCommand.Path
 $soundDir   = Join-Path $base "sounds"
 $loopScript = Join-Path $base "kimi-notify-loop.ps1"
+$configFile = Join-Path $base "config.json"
 $flagFile   = Join-Path $env:TEMP "kimi-notify-pending.flag"
 $MaxMinutes = 15
 
-# Intervallo di ripetizione (secondi) per categoria. 0 = suona una sola volta.
-$Intervals = @{
-    request  = 2    # permission requested
-    question = 3    # question for the user
-    done     = 5    # work finished
-    error    = 0    # error (single shot)
-    agent    = 0    # subagent completed (single shot)
-}
+# --- Configurazione (volumi 0-100, intervalli secondi; 0 = colpo singolo) ---
+$Volumes   = @{ request=100; question=90; done=70; error=100; agent=60; info=50 }
+$Intervals = @{ request=2;   question=3;  done=5;  error=0;   agent=0;  info=0  }
+try {
+    if (Test-Path $configFile) {
+        $cfg = Get-Content $configFile -Raw | ConvertFrom-Json
+        foreach ($k in @($Volumes.Keys)) {
+            if ($cfg.volume.$k   -ne $null) { $Volumes[$k]   = [int]$cfg.volume.$k }
+            if ($cfg.interval.$k -ne $null) { $Intervals[$k] = [int]$cfg.interval.$k }
+        }
+    }
+} catch {}
 
 # --- Evento Answered: l'utente ha risposto -> ferma il loop + marca il prompt ---
 if ($Event -eq "Answered") {
@@ -61,10 +70,17 @@ switch ($Event) {
             $ntitle = "$($json.title)"
             $nbody  = "$($json.body)"
         }
-        if ($ntype -match "question|input|ask|elicitation") {
+        $all = "$ntype $ntitle $nbody"
+        if ($all -match "fail|error|errore") {
+            # es. "Background task failed": e' un errore, NON una domanda
+            $category = "error";   $title = "Kimi Code - Errore background"
+        } elseif ($ntype -match "\b(question|ask|input|elicitation)\b") {
             $category = "question"; $title = "Kimi Code - Domanda"
+        } elseif ($ntype -match "permission|approval|confirm") {
+            $category = "request";  $title = "Kimi Code - Permesso richiesto"
         } else {
-            $category = "request"; $title = "Kimi Code - Permesso richiesto"
+            # es. "Background task completed": informativa, colpo singolo
+            $category = "info";     $title = "Kimi Code - Notifica"
         }
         $message = ($ntitle + " " + $nbody).Trim()
         if (-not $message) { $message = "Kimi richiede la tua attenzione." }
@@ -116,6 +132,7 @@ try {
 
 $wav      = Join-Path $soundDir "$category.wav"
 $interval = $Intervals[$category]
+$volume   = $Volumes[$category]
 
 # --- Un solo loop alla volta: il nuovo alert sopprime il precedente ---
 $loopId = "$now-$PID"
@@ -131,29 +148,39 @@ if ($interval -gt 0) {
             "-FlagFile", "`"$flagFile`"",
             "-LoopId", "`"$loopId`"",
             "-IntervalSec", "$interval",
+            "-Volume", "$volume",
             "-MaxMinutes", "$MaxMinutes"
         )
     } catch {
         try { (New-Object System.Media.SoundPlayer $wav).PlaySync() } catch {}
     }
 } else {
-    # --- Suono singolo ---
+    # --- Suono singolo (volume da config, via WMP COM; fallback SoundPlayer) ---
     try {
-        if (Test-Path $wav) { (New-Object System.Media.SoundPlayer $wav).PlaySync() }
-        else { [Console]::Beep(1800, 400) }
+        $wmp = New-Object -ComObject WMPlayer.OCX
+        $wmp.settings.volume = $volume
+        $wmp.URL = $wav
+        Start-Sleep -Milliseconds 250  # lascia partire la riproduzione
+        $t0 = Get-Date
+        # attendi la fine: playState 1=stopped, 8=media ended
+        while (($wmp.playState -ne 1 -and $wmp.playState -ne 8) -and ((Get-Date) - $t0).TotalSeconds -lt 10) {
+            Start-Sleep -Milliseconds 100
+        }
+        $wmp.close()
     } catch {
-        try { [Console]::Beep(1800, 400) } catch {}
+        try { (New-Object System.Media.SoundPlayer $wav).PlaySync() } catch { try { [Console]::Beep(1800, 400) } catch {} }
     }
     # Alert singolo: nessun loop in attesa -> pulisci il flag
     try { Remove-Item $flagFile -Force } catch {}
 }
 
 # --- Toast visiva (best-effort, silenziosa: il suono lo gestiamo noi) ---
+# Il CORPO della toast (anche nel Centro notifiche) e il tasto fermano il suono.
 try {
     $t = [System.Security.SecurityElement]::Escape($title)
     $m = [System.Security.SecurityElement]::Escape($message)
     $template = @"
-<toast>
+<toast activationType="protocol" launch="woltrillkimi://stop">
   <visual>
     <binding template="ToastGeneric">
       <text>$t</text>

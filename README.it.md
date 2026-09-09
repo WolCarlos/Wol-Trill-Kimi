@@ -23,8 +23,9 @@ Wol-Trill-Kimi usa gli [hook nativi di Kimi Code](https://moonshotai.github.io/k
 | 🔴 `request` | Permesso richiesto | 4 bip rapidi altissimi | ogni 2s |
 | 🟡 `question` | Kimi ti fa una domanda | due toni ascendenti | ogni 3s |
 | 🟢 `done` | Turno completato | arpeggio ascendente | ogni 5s |
-| ⛔ `error` | Turno fallito | sweep discendente | singolo |
+| ⛔ `error` | Turno fallito / task background fallito | sweep discendente | singolo |
 | 🤖 `agent` | Subagent completato | doppio blip acuto | singolo |
+| ℹ️ `info` | Altre notifiche (es. task background completato) | ping singolo morbido | singolo |
 
 Anti-spam: il `Stop` di Kimi può scattare a metà lavoro → la notifica "done" viene soppressa se ne è partita un'altra da meno di 60s senza un tuo prompt in mezzo.
 
@@ -49,16 +50,31 @@ L'installer:
 
 ## Fermare un suono in loop
 
-- **Clicca il tasto "Ferma suono" dentro la notifica toast** (Windows, registrato tramite il protocollo `woltrillkimi://stop`)
+- **Clicca la toast — il tasto "Ferma suono" o il corpo della notifica** (funziona anche dal Centro notifiche; usa il protocollo `woltrillkimi://stop`)
 - **Rispondi a Kimi** (prompt o click su approva/nega) → si ferma da solo
 - **Windows**: doppio click su `STOP Kimi Notifiche` sul Desktop (o esegui `~/.kimi/notify/stop-notifica.cmd`)
 - **macOS**: esegui `~/.kimi/notify/stop-notifica.sh`
 
 Nota: chiudere la toast (o cliccare sul suo corpo) NON ferma il suono — usa il tasto o uno dei metodi sopra.
 
+## Configurazione (volumi e intervalli)
+
+Ogni categoria ha il suo **volume** (0–100, per categoria, indipendente dal volume delle notifiche di Windows) e il suo **intervallo** (secondi tra una ripetizione e l'altra, `0` = colpo singolo) in `~/.kimi/notify/config.json`:
+
+```json
+{
+  "volume":   { "request": 100, "question": 90, "done": 70, "error": 100, "agent": 60, "info": 50 },
+  "interval": { "request": 2,   "question": 3,  "done": 5,  "error": 0,   "agent": 0,  "info": 0 }
+}
+```
+
+- **Windows**: esegui `~/.kimi/notify/modifica-configurazione.cmd` per aprirlo in Blocco note
+- Le modifiche valgono dalla prossima notifica — nessun riavvio necessario
+- La reinstallazione NON sovrascrive il tuo `config.json`
+
 ## Provare i suoni
 
-- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd question` (singolo)
+- **Windows**: `~/.kimi/notify/prova-notifiche.cmd` (tutti) oppure `prova-notifiche.cmd question` (singolo; categorie: `request`, `question`, `done`, `error`, `agent`, `info`)
 - I WAV si rigenerano/modificano con `python tools/generate-sounds.py`
 
 ## Disinstallazione

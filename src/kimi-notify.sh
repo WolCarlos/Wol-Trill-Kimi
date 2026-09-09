@@ -13,18 +13,27 @@
 EVENT="${1:-Stop}"
 BASE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOUND_DIR="$BASE/sounds"
+CONFIG_FILE="$BASE/config.json"
 TMP="${TMPDIR:-/tmp}"
 FLAG_FILE="$TMP/kimi-notify-pending.flag"
 MAX_MINUTES=15
 
-# Intervallo di ripetizione (secondi) per categoria. 0 = suona una sola volta.
+# Configurazione (volumi 0-100, intervalli secondi; 0 = colpo singolo)
+conf_val() {  # conf_val <sezione> <chiave> <default> — section-aware
+    local v
+    v=$(awk -v sec="\"$1\"" -v key="\"$2\"" '
+        $0 ~ sec "[[:space:]]*:[[:space:]]*\\{" { insec=1; next }
+        insec && /^[[:space:]]*}/ { insec=0 }
+        insec && $0 ~ key { match($0, /[0-9]+/); print substr($0, RSTART, RLENGTH); exit }
+    ' "$CONFIG_FILE" 2>/dev/null)
+    echo "${v:-$3}"
+}
+
 interval_for() {
-    case "$1" in
-        request)  echo 2 ;;
-        question) echo 3 ;;
-        done)     echo 5 ;;
-        *)        echo 0 ;;  # error, agent
-    esac
+    conf_val interval "$1" "$(case "$1" in request) echo 2;; question) echo 3;; done) echo 5;; *) echo 0;; esac)"
+}
+volume_for() {
+    conf_val volume "$1" "$(case "$1" in request) echo 100;; question) echo 90;; done) echo 70;; error) echo 100;; agent) echo 60;; info) echo 50;; esac)"
 }
 
 # --- Answered: l'utente ha risposto -> ferma il loop + marca il prompt ---
@@ -51,10 +60,17 @@ case "$EVENT" in
         NTYPE="$(json_field notification_type)"
         NTITLE="$(json_field title)"
         NBODY="$(json_field body)"
-        if echo "$NTYPE" | grep -qiE "question|input|ask|elicitation"; then
+        ALL="$NTYPE $NTITLE $NBODY"
+        if echo "$ALL" | grep -qiE "fail|error|errore"; then
+            # es. "Background task failed": e' un errore, NON una domanda
+            CATEGORY="error"; TITLE="Kimi Code - Errore background"
+        elif echo "$NTYPE" | grep -qiE "\b(question|ask|input|elicitation)\b"; then
             CATEGORY="question"; TITLE="Kimi Code - Domanda"
-        else
+        elif echo "$NTYPE" | grep -qiE "permission|approval|confirm"; then
             CATEGORY="request"; TITLE="Kimi Code - Permesso richiesto"
+        else
+            # es. "Background task completed": informativa, colpo singolo
+            CATEGORY="info"; TITLE="Kimi Code - Notifica"
         fi
         MESSAGE="$(echo "$NTITLE $NBODY" | xargs)"
         [ -z "$MESSAGE" ] && MESSAGE="Kimi richiede la tua attenzione."
@@ -100,6 +116,9 @@ echo "$NOW" > "$STAMP_FILE" 2>/dev/null
 
 WAV="$SOUND_DIR/$CATEGORY.wav"
 INTERVAL=$(interval_for "$CATEGORY")
+VOLUME=$(volume_for "$CATEGORY")
+# afplay accetta volume 0.0-1.0
+AVOL=$(awk "BEGIN{print $VOLUME/100}")
 
 # --- Un solo loop alla volta: il nuovo alert sopprime il precedente ---
 LOOP_ID="$NOW-$$"
@@ -112,14 +131,14 @@ if [ "$INTERVAL" -gt 0 ]; then
         while [ "$(date +%s)" -lt "$END" ]; do
             CURRENT="$(cat "$FLAG_FILE" 2>/dev/null)" || break
             [ "$CURRENT" != "$LOOP_ID" ] && break
-            afplay "$WAV" 2>/dev/null
+            afplay -v "$AVOL" "$WAV" 2>/dev/null
             sleep "$INTERVAL"
         done
     ) >/dev/null 2>&1 &
     disown
 else
     # --- Suono singolo ---
-    afplay "$WAV" 2>/dev/null
+    afplay -v "$AVOL" "$WAV" 2>/dev/null
     rm -f "$FLAG_FILE" 2>/dev/null
 fi
 

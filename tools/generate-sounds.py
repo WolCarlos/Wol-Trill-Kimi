@@ -3,7 +3,7 @@ import math, wave, struct, os
 
 SR = 44100
 AMP = 0.95
-OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "sounds")
+OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "sounds")
 os.makedirs(OUT, exist_ok=True)
 
 def tone(freq, ms, fade=6):
@@ -49,3 +49,8 @@ save("error.wav", sweep(900, 300, 450))
 
 # AGENT (subagent completed): short double high blip (C7=2093Hz)
 save("agent.wav", (tone(2093, 80) + silence(60)) * 2)
+
+# INFO (es. background task completed): single soft gentle ping (A6=1760Hz)
+def soft_tone(freq, ms):
+    return [s * 0.6 for s in tone(freq, ms, fade=30)]
+save("info.wav", soft_tone(1760, 180))
