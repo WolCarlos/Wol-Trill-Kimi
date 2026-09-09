@@ -113,9 +113,8 @@ install.* / uninstall.*
 
 ## Notes
 
-- Requires Kimi Code with hooks support (Beta). Hooks run in the same shell as Kimi (Git Bash on Windows, bash on macOS).
-- On Windows sounds are played directly (`System.Media.SoundPlayer`): they don't depend on Focus Assist or notification settings.
-- On macOS sounds use `afplay` and visual notifications use `osascript`.
+- **Tested on Windows 10/11.** macOS and Linux support is implemented (`afplay`/`osascript`, `paplay`/`ffplay`/`notify-send` auto-detection) but **not yet tested on real machines** — feedback and PRs welcome!
+- Requires Kimi Code with hooks support (Beta). Hooks run in the same shell as Kimi (Git Bash on Windows, bash on macOS/Linux).
 
 ## License
 
