@@ -75,6 +75,13 @@ function Save-Config {
             <Grid Margin="10,0">
               <Border Height="6" CornerRadius="3" Background="#FF333A4D" VerticalAlignment="Center"/>
               <Track VerticalAlignment="Center">
+                <Track.DecreaseRepeatButton>
+                  <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.DecreaseRepeatButton>
                 <Track.Thumb>
                   <Thumb>
                     <Thumb.Template>
@@ -84,6 +91,13 @@ function Save-Config {
                     </Thumb.Template>
                   </Thumb>
                 </Track.Thumb>
+                <Track.IncreaseRepeatButton>
+                  <RepeatButton Command="Slider.IncreaseLarge" Focusable="False">
+                    <RepeatButton.Template>
+                      <ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate>
+                    </RepeatButton.Template>
+                  </RepeatButton>
+                </Track.IncreaseRepeatButton>
               </Track>
             </Grid>
           </ControlTemplate>

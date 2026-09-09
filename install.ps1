@@ -4,7 +4,7 @@
 #   1. copia script + suoni in ~\.kimi\notify\
 #   2. aggiunge gli hook a ~\.kimi\config.toml (blocco marcato, idempotente)
 #   3. crea il collegamento "STOP Kimi Notifiche" sul Desktop
-# Uso: powershell.exe -NoProfile -ExecutionPolicy Bypass -File install.ps1
+# Uso: powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File install.ps1
 # ============================================================================
 
 $ErrorActionPreference = "Stop"
@@ -39,33 +39,33 @@ $block = @"
 $begin
 [[hooks]]
 event = "Notification"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Notification'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Notification'
 timeout = 25
 
 [[hooks]]
 event = "PreToolUse"
 matcher = "AskUserQuestion"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Question'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Question'
 timeout = 25
 
 [[hooks]]
 event = "Stop"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Stop'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Stop'
 timeout = 25
 
 [[hooks]]
 event = "StopFailure"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event StopFailure'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event StopFailure'
 timeout = 25
 
 [[hooks]]
 event = "SubagentStop"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event SubagentStop'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event SubagentStop'
 timeout = 25
 
 [[hooks]]
 event = "UserPromptSubmit"
-command = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Answered'
+command = 'powershell.exe -WindowStyle Hidden -NoProfile -ExecutionPolicy Bypass -File "$notify" -Event Answered'
 timeout = 10
 
 [[hooks]]
