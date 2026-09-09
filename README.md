@@ -1,6 +1,9 @@
-# Wol-Trill-Kimi
+<p align="center">
+  <img src="assets/mascotte.png" alt="Wol-Trill, la mascotte di Wol-Trill-Kimi" width="340">
+</p>
+<h1 align="center">Wol-Trill-Kimi</h1>
 
-[🇬🇧 **English**](README.md) | [🇮🇹 **Italiano**](README.it.md)
+<p align="center">🇬🇧 <b>English</b> · <a href="README.it.md">🇮🇹 <b>Italiano</b></a></p>
 
 **Sound and visual notifications** for [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (VS Code extension and CLI), on **Windows**, **macOS** and **Linux**.
 
