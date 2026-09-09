@@ -1,10 +1,11 @@
 #!/bin/bash
 # ============================================================================
-# Wol-Trill-Kimi — install.sh (macOS)
+# Wol-Trill-Kimi — install.sh (macOS + Linux)
 # Installa le notifiche per Kimi Code:
 #   1. copia script + suoni in ~/.kimi/notify/
 #   2. aggiunge gli hook a ~/.kimi/config.toml (blocco marcato, idempotente)
 # Uso: bash install.sh
+# Su Linux servono: bash + un player (paplay/aplay/ffplay/sox) + notify-send (opz.)
 # ============================================================================
 set -e
 
@@ -19,6 +20,13 @@ mkdir -p "$DEST/sounds"
 cp "$SRC/src/kimi-notify.sh" "$SRC/src/stop-notifica.sh" "$DEST/"
 cp "$SRC"/sounds/*.wav "$DEST/sounds/"
 chmod +x "$DEST/kimi-notify.sh" "$DEST/stop-notifica.sh"
+# config.json: non sovrascrivere le preferenze dell'utente se esiste gia'
+if [ ! -f "$DEST/config.json" ]; then
+    cp "$SRC/src/config.json" "$DEST/"
+    echo "[OK] config.json installato (default)"
+else
+    echo "[OK] config.json esistente mantenuto"
+fi
 echo "[OK] File copiati in $DEST"
 
 # --- 2. Hook in config.toml (blocco marcato, idempotente) ---

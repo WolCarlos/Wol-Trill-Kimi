@@ -2,7 +2,7 @@
 
 [🇬🇧 **English**](README.md) | [🇮🇹 **Italiano**](README.it.md)
 
-**Sound and visual notifications** for [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (VS Code extension and CLI), on **Windows** and **macOS**.
+**Sound and visual notifications** for [Kimi Code](https://github.com/MoonshotAI/kimi-cli) (VS Code extension and CLI), on **Windows**, **macOS** and **Linux**.
 
 Know when Kimi asks for a permission, asks you a question, or finishes its work — even when you're on another window.
 
@@ -59,7 +59,16 @@ Note: closing the toast (or clicking its body) does NOT stop the sound — use t
 
 ## Settings dashboard (Windows)
 
-Double-click **`Wol-Trill-Kimi Impostazioni`** on the Desktop (or run `~/.kimi/notify/dashboard.cmd`): a dark-themed GUI to tune each category's volume slider and repeat interval, with a **Test** button per sound, **Stop sounds**, **Restore defaults** and **Save** (writes `config.json`, applies from the next notification).
+Double-click **`Wol-Trill-Kimi Impostazioni`** on the Desktop (or run `~/.kimi/notify/dashboard.cmd`): a dark-themed GUI with:
+
+- **Volume slider + numeric badge** per category (0-100, independent per sound)
+- **Repeat interval** per category (seconds, 0 = single shot)
+- **Custom sounds**: drag & drop an audio file (.wav .mp3 .m4a .aac .ogg) onto a card, or use the folder button to browse — stored in `sounds/custom/`, revertible with the ↺ button
+- **▶ Test** per sound, **Stop sounds**, **Restore defaults**, **Save** (writes `config.json`, applies from the next notification)
+
+### Linux notes
+
+`kimi-notify.sh` auto-detects the audio player (`afplay`, `ffplay`, `play`/sox, `paplay`, `aplay`) and the visual notifier (`osascript` on macOS, `notify-send` on Linux). No dashboard on macOS/Linux: edit `~/.kimi/notify/config.json` directly.
 
 ## Configuration (volumes & intervals)
 

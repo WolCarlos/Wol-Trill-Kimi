@@ -33,12 +33,14 @@ $MaxMinutes = 15
 # --- Configurazione (volumi 0-100, intervalli secondi; 0 = colpo singolo) ---
 $Volumes   = @{ request=100; question=90; done=70; error=100; agent=60; info=50 }
 $Intervals = @{ request=2;   question=3;  done=5;  error=0;   agent=0;  info=0  }
+$Files     = @{}
 try {
     if (Test-Path $configFile) {
         $cfg = Get-Content $configFile -Raw | ConvertFrom-Json
         foreach ($k in @($Volumes.Keys)) {
             if ($cfg.volume.$k   -ne $null) { $Volumes[$k]   = [int]$cfg.volume.$k }
             if ($cfg.interval.$k -ne $null) { $Intervals[$k] = [int]$cfg.interval.$k }
+            if ($cfg.files.$k)              { $Files[$k]     = "$($cfg.files.$k)" }
         }
     }
 } catch {}
@@ -130,7 +132,13 @@ try {
     [System.IO.File]::WriteAllText($stampFile, "$now")
 } catch {}
 
-$wav      = Join-Path $soundDir "$category.wav"
+# Suono: personalizzato da config (files) o predefinito
+$wav = Join-Path $soundDir "$category.wav"
+if ($Files.ContainsKey($category)) {
+    $custom = $Files[$category]
+    if (-not [System.IO.Path]::IsPathRooted($custom)) { $custom = Join-Path $soundDir $custom }
+    if (Test-Path $custom) { $wav = $custom }
+}
 $interval = $Intervals[$category]
 $volume   = $Volumes[$category]
 

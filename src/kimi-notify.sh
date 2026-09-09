@@ -1,7 +1,9 @@
 #!/bin/bash
 # ============================================================================
-# Wol-Trill-Kimi — kimi-notify.sh (macOS)
+# Wol-Trill-Kimi — kimi-notify.sh (macOS + Linux)
 # Notifiche sonore + notifiche di sistema per gli hook di Kimi Code.
+# Player: afplay (macOS) / ffplay / play (sox) / paplay / aplay (Linux).
+# Visuale: osascript (macOS) / notify-send (Linux).
 # Stessa logica della versione Windows: un solo loop alla volta, il nuovo
 # alert sopprime il precedente, stop su risposta utente / stop-notifica.sh /
 # timeout di sicurezza.
@@ -34,6 +36,37 @@ interval_for() {
 }
 volume_for() {
     conf_val volume "$1" "$(case "$1" in request) echo 100;; question) echo 90;; done) echo 70;; error) echo 100;; agent) echo 60;; info) echo 50;; esac)"
+}
+file_for() {  # suono personalizzato da config (sezione files), stringa
+    awk -v key="\"$1\"" '
+        $0 ~ "\"files\"[[:space:]]*:[[:space:]]*\\{" { insec=1; next }
+        insec && /^[[:space:]]*}/ { insec=0 }
+        insec && $0 ~ key { match($0, /"[^"]*"[[:space:]]*,?[[:space:]]*$/); s=substr($0, RSTART, RLENGTH); gsub(/[",[:space:]]/, "", s); print s; exit }
+    ' "$CONFIG_FILE" 2>/dev/null
+}
+
+# Riproduzione cross-platform con volume best-effort (0-100)
+play_sound() {
+    local f="$1" v="$2"
+    if command -v afplay >/dev/null 2>&1; then
+        afplay -v "$(awk "BEGIN{print $v/100}")" "$f"
+    elif command -v ffplay >/dev/null 2>&1; then
+        ffplay -nodisp -autoexit -loglevel quiet -volume "$v" "$f"
+    elif command -v play >/dev/null 2>&1; then
+        play -v "$(awk "BEGIN{print $v/100}")" "$f" 2>/dev/null
+    elif command -v paplay >/dev/null 2>&1; then
+        paplay "$f"
+    elif command -v aplay >/dev/null 2>&1; then
+        aplay -q "$f"
+    fi
+}
+
+visual_notify() {
+    if command -v osascript >/dev/null 2>&1; then
+        osascript -e "display notification \"$2\" with title \"$1\"" 2>/dev/null
+    elif command -v notify-send >/dev/null 2>&1; then
+        notify-send "$1" "$2" 2>/dev/null
+    fi
 }
 
 # --- Answered: l'utente ha risposto -> ferma il loop + marca il prompt ---
@@ -115,10 +148,13 @@ fi
 echo "$NOW" > "$STAMP_FILE" 2>/dev/null
 
 WAV="$SOUND_DIR/$CATEGORY.wav"
+CUSTOM=$(file_for "$CATEGORY")
+if [ -n "$CUSTOM" ]; then
+    case "$CUSTOM" in /*) ;; *) CUSTOM="$SOUND_DIR/$CUSTOM";; esac
+    [ -f "$CUSTOM" ] && WAV="$CUSTOM"
+fi
 INTERVAL=$(interval_for "$CATEGORY")
 VOLUME=$(volume_for "$CATEGORY")
-# afplay accetta volume 0.0-1.0
-AVOL=$(awk "BEGIN{print $VOLUME/100}")
 
 # --- Un solo loop alla volta: il nuovo alert sopprime il precedente ---
 LOOP_ID="$NOW-$$"
@@ -131,18 +167,18 @@ if [ "$INTERVAL" -gt 0 ]; then
         while [ "$(date +%s)" -lt "$END" ]; do
             CURRENT="$(cat "$FLAG_FILE" 2>/dev/null)" || break
             [ "$CURRENT" != "$LOOP_ID" ] && break
-            afplay -v "$AVOL" "$WAV" 2>/dev/null
+            play_sound "$WAV" "$VOLUME"
             sleep "$INTERVAL"
         done
     ) >/dev/null 2>&1 &
     disown
 else
     # --- Suono singolo ---
-    afplay -v "$AVOL" "$WAV" 2>/dev/null
+    play_sound "$WAV" "$VOLUME"
     rm -f "$FLAG_FILE" 2>/dev/null
 fi
 
-# --- Notifica visiva macOS (best-effort, silenziosa) ---
-osascript -e "display notification \"$MESSAGE\" with title \"$TITLE\"" 2>/dev/null
+# --- Notifica visiva (best-effort) ---
+visual_notify "$TITLE" "$MESSAGE"
 
 exit 0
