@@ -120,3 +120,5 @@ install.* / uninstall.*
 ## License
 
 MIT
+
+<!-- Test comment: aggiunto da una sessione fork di Kimi Code per verificare il workflow (notifiche + gh push). -->
