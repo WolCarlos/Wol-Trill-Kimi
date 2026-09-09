@@ -24,6 +24,7 @@ if (Test-Path $config) {
 # Rimuovi file, collegamento Desktop e protocollo
 Remove-Item $dest -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item (Join-Path ([Environment]::GetFolderPath("Desktop")) "STOP Kimi Notifiche.lnk") -Force -ErrorAction SilentlyContinue
+Remove-Item (Join-Path ([Environment]::GetFolderPath("Desktop")) "Wol-Trill-Kimi Impostazioni.lnk") -Force -ErrorAction SilentlyContinue
 Remove-Item "HKCU:\Software\Classes\woltrillkimi" -Recurse -Force -ErrorAction SilentlyContinue
 Write-Host "[OK] File rimossi da $dest"
 Write-Host "Disinstallazione completata. Riavvia Kimi Code."

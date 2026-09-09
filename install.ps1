@@ -96,7 +96,7 @@ $text = $text.TrimEnd() + "`r`n`r`n" + $block + "`r`n"
 [System.IO.File]::WriteAllText($config, $text)
 Write-Host "[OK] Hook registrati in $config"
 
-# --- 3. Collegamento Desktop per fermare i suoni ---
+# --- 3. Collegamenti Desktop ---
 try {
     $desktop = [Environment]::GetFolderPath("Desktop")
     $wsh = New-Object -ComObject WScript.Shell
@@ -105,7 +105,12 @@ try {
     $lnk.WindowStyle = 7  # minimizzata
     $lnk.Description = "Ferma subito i suoni di Wol-Trill-Kimi"
     $lnk.Save()
-    Write-Host "[OK] Collegamento Desktop: STOP Kimi Notifiche.lnk"
+    $lnk2 = $wsh.CreateShortcut((Join-Path $desktop "Wol-Trill-Kimi Impostazioni.lnk"))
+    $lnk2.TargetPath = "wscript.exe"
+    $lnk2.Arguments = '"' + (Join-Path $dest "dashboard.vbs") + '"'
+    $lnk2.Description = "Apri la dashboard impostazioni di Wol-Trill-Kimi (volumi e intervalli)"
+    $lnk2.Save()
+    Write-Host "[OK] Collegamenti Desktop: STOP Kimi Notifiche.lnk + Wol-Trill-Kimi Impostazioni.lnk"
 } catch {
     Write-Host "[WARN] Collegamento Desktop non creato: $_"
 }

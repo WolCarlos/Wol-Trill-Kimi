@@ -57,6 +57,10 @@ The installer:
 
 Note: closing the toast (or clicking its body) does NOT stop the sound — use the button or one of the methods above.
 
+## Settings dashboard (Windows)
+
+Double-click **`Wol-Trill-Kimi Impostazioni`** on the Desktop (or run `~/.kimi/notify/dashboard.cmd`): a dark-themed GUI to tune each category's volume slider and repeat interval, with a **Test** button per sound, **Stop sounds**, **Restore defaults** and **Save** (writes `config.json`, applies from the next notification).
+
 ## Configuration (volumes & intervals)
 
 Each category has its own **volume** (0–100, per-category, independent of the Windows notification volume) and **interval** (seconds between repetitions, `0` = single shot) in `~/.kimi/notify/config.json`:
@@ -68,7 +72,7 @@ Each category has its own **volume** (0–100, per-category, independent of the 
 }
 ```
 
-- **Windows**: run `~/.kimi/notify/modifica-configurazione.cmd` to open it in Notepad
+- **Windows**: run `~/.kimi/notify/modifica-configurazione.cmd` to open it in Notepad (or use the settings dashboard above)
 - Changes apply from the next notification — no restart needed
 - Reinstalling does NOT overwrite your `config.json`
 
@@ -89,6 +93,7 @@ src/
   kimi-notify.ps1       # notification engine (Windows)
   kimi-notify-loop.ps1  # background sound loop (Windows)
   kimi-notify.sh        # engine + loop (macOS)
+  dashboard.ps1 / .cmd / .vbs  # settings GUI (Windows)
   stop-notifica.cmd     # manual stop (Windows)
   stop-notifica.sh      # manual stop (macOS)
   prova-notifiche.cmd   # sound preview (Windows)
